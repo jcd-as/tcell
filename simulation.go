@@ -549,6 +549,10 @@ func (s *simscreen) Suspend() error {
 	return nil
 }
 
+func (s *simscreen) SuspendNoClear() error {
+	return nil
+}
+
 func (s *simscreen) Resume() error {
 	return nil
 }

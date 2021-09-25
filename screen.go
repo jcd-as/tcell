@@ -227,6 +227,10 @@ type Screen interface {
 	// terminal settings to what they were when the application started.
 	// This can be used to, for example, run a sub-shell.
 	Suspend() error
+	
+	// SuspendNoClear suspends as Suspend does, but does not clear the 
+	// screen.
+	SuspendNoClear() error
 
 	// Resume resumes after Suspend().
 	Resume() error

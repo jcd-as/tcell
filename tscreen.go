@@ -1631,7 +1631,12 @@ func (t *tScreen) HasKey(k Key) bool {
 func (t *tScreen) Resize(int, int, int, int) {}
 
 func (t *tScreen) Suspend() error {
-	t.disengage()
+	t.disengage(true)
+	return nil
+}
+
+func (t *tScreen) SuspendNoClear() error {
+	t.disengage(false)
 	return nil
 }
 
@@ -1686,7 +1691,7 @@ func (t *tScreen) engage() error {
 // Think of this as tcell disengaging the clutch, so that another application
 // can take over the terminal interface.  This restores the TTY mode that was
 // present when the application was first started.
-func (t *tScreen) disengage() {
+func (t *tScreen) disengage(clearScreen bool) {
 
 	t.Lock()
 	if !t.running {
@@ -1709,8 +1714,10 @@ func (t *tScreen) disengage() {
 	t.TPuts(ti.ShowCursor)
 	t.TPuts(ti.ResetFgBg)
 	t.TPuts(ti.AttrOff)
-	t.TPuts(ti.Clear)
-	t.TPuts(ti.ExitCA)
+	if clearScreen {
+		t.TPuts(ti.Clear)
+		t.TPuts(ti.ExitCA)
+	}
 	t.TPuts(ti.ExitKeypad)
 	t.enableMouse(0)
 	t.enablePasting(false)
@@ -1727,6 +1734,6 @@ func (t *tScreen) Beep() error {
 // finalize is used to at application shutdown, and restores the terminal
 // to it's initial state.  It should not be called more than once.
 func (t *tScreen) finalize() {
-	t.disengage()
+	t.disengage(true)
 	_ = t.tty.Close()
 }
